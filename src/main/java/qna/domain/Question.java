@@ -17,7 +17,7 @@ public class Question extends BaseEntity {
     @Lob
     private String contents;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "writer_id", foreignKey = @ForeignKey(name = "fk_question_writer"))
     private User writer;
 
@@ -25,7 +25,7 @@ public class Question extends BaseEntity {
     private boolean deleted = false;
 
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question", cascade = CascadeType.PERSIST)
     private List<Answer> answers = new ArrayList<>();
 
     protected Question() {
@@ -55,6 +55,10 @@ public class Question extends BaseEntity {
             this.answers.add(answer);
         }
         answer.toQuestion(this);
+    }
+
+    public void toWriter(User writer) {
+        this.writer = writer;
     }
 
     public Long getId() {

@@ -115,12 +115,33 @@ public class User extends BaseEntity {
         return answers;
     }
 
+    public void addAnswer(Answer answer) {
+        if (!answers.contains(answer)) {
+            answers.add(answer);
+        }
+        answer.toWriter(this);
+    }
+
     public List<DeleteHistory> getDeleteHistories() {
         return deleteHistories;
     }
 
+    public void addDeleteHistories(DeleteHistory deleteHistory) {
+        if (!deleteHistories.contains(deleteHistory)) {
+            deleteHistories.add(deleteHistory);
+        }
+        deleteHistory.toDeletedBy(this);
+    }
+
     public List<Question> getQuestions() {
         return questions;
+    }
+
+    public void addQuestion(Question question) {
+        if (!questions.contains(question)) {
+            questions.add(question);
+        }
+        question.toWriter(this);
     }
 
     @Override

@@ -23,9 +23,6 @@ public class QuestionTest {
     private QuestionRepository questions;
 
     @Autowired
-    private UserRepository users;
-
-    @Autowired
     private AnswerRepository answers;
 
     @Autowired
@@ -36,7 +33,6 @@ public class QuestionTest {
     @BeforeEach
     void setUp() {
         user = new User("mwkwon", "password", "권민욱", "mwkwon0110@gmail.com");
-        users.save(user);
     }
 
     @Test
@@ -56,10 +52,22 @@ public class QuestionTest {
     @DisplayName("질문 테이블 아이디 정상 조회 테스트")
     void findById() {
         Question expected = questions.save(new Question("title1", "contents").writeBy(user));
+        entityManager.flush();
+        entityManager.clear();
         Optional<Question> actual = questions.findById(expected.getId());
         assertThat(actual.isPresent()).isTrue();
         assertThat(actual.get().getId()).isEqualTo(expected.getId());
-        assertThat(actual.get() == expected).isTrue();
+    }
+
+    @Test
+    void findById_equal_user() {
+        Question question = questions.save(new Question("title1", "contents").writeBy(user));
+        Question expected = questions.save(question);
+        entityManager.flush();
+        entityManager.clear();
+        Optional<Question> actual = questions.findById(expected.getId());
+        assertThat(actual.isPresent()).isTrue();
+        assertThat(actual.get().getWriter().getId()).isEqualTo(user.getId());
     }
 
     @Test
@@ -67,13 +75,10 @@ public class QuestionTest {
     void findAnswersByQuestion() {
         Question expected = new Question("title1", "contents").writeBy(user);
         questions.save(expected);
-        entityManager.flush();
-        entityManager.clear();
 
         List<Answer> answers = Arrays.asList(
                 new Answer(user, expected, "Answers Contents1"),
                 new Answer(user, expected, "Answers Contents1"));
-        List<Answer> exceptedAnswers = this.answers.saveAll(answers);
 
         Optional<Question> actual = questions.findById(expected.getId());
 

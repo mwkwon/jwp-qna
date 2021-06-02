@@ -21,12 +21,6 @@ public class AnswerTest {
     private AnswerRepository answers;
 
     @Autowired
-    private UserRepository users;
-
-    @Autowired
-    private QuestionRepository questions;
-
-    @Autowired
     private EntityManager entityManager;
 
     private User user;
@@ -36,8 +30,6 @@ public class AnswerTest {
     void setUp() {
         user = new User("mwkwon", "password", "권민욱", "mwkwon0110@gmail.com");
         question = new Question("title", "content");
-        users.save(user);
-        questions.save(question);
     }
     @Test
     @DisplayName("답변 테이블 정상 저장 테스트")
@@ -53,11 +45,10 @@ public class AnswerTest {
     @Test
     @DisplayName("아이디 기준 데이터 정상 조회 테스트")
     void findById() {
+        User user = new User("mwkwon", "password", "권민욱", "mwkwon0110@gmail.com");
+        Question question = new Question("title", "content");
         Answer answer = new Answer(user, question, "Answers Contents1");
         Answer expected = answers.save(answer);
-        entityManager.flush();
-        entityManager.clear();
-
         Optional<Answer> actual = answers.findById(expected.getId());
         assertThat(actual.isPresent()).isTrue();
         assertThat(actual.get().getId()).isEqualTo(expected.getId());
@@ -70,7 +61,6 @@ public class AnswerTest {
         Answer expected = answers.save(answer);
         entityManager.flush();
         entityManager.clear();
-
         Optional<Answer> actual = answers.findById(expected.getId());
         assertThat(actual.isPresent()).isTrue();
         assertThat(actual.get().getWriter().getId()).isEqualTo(user.getId());
@@ -83,7 +73,6 @@ public class AnswerTest {
         Answer expected = answers.save(answer);
         entityManager.flush();
         entityManager.clear();
-
         Optional<Answer> actual = answers.findById(expected.getId());
         assertThat(actual.isPresent()).isTrue();
         assertThat(actual.get().getQuestion().getId()).isEqualTo(question.getId());
